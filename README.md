@@ -30,13 +30,13 @@ optimize(f, [0.0, 0.0])
 Optim will default to using the Nelder-Mead method in this case. We can specify the Nelder-Mead method explicitly using the `method` keyword:
 
 ```jl
-optimize(f, [0.0, 0.0], method = NelderMead())
+optimize(f, [0.0, 0.0], NelderMead())
 ```
 
 The `method` keyword also allows us to specify other methods as well. Below, we use L-BFGS, a quasi-Newton method that requires a gradient. If we pass `f` alone, Optim will construct an approximate gradient for us using central finite differencing:
 
 ```jl
-optimize(f, [0.0, 0.0], method = LBFGS())
+optimize(f, [0.0, 0.0], LBFGS())
 ```
 
 For greater precision, you should pass in the exact gradient function. This can be shown to be:
@@ -53,13 +53,13 @@ Note that the functions we're using to calculate the gradient (and later the Hes
 Returning to our optimization, you simply pass `g!` together with `f` from before to use the exact gradient:
 
 ```jl  
-optimize(f, g!, [0.0, 0.0], method = LBFGS())
+optimize(f, g!, [0.0, 0.0], LBFGS())
 ```
 
 For some methods, like simulated annealing, the exact gradient will be ignored:
 
 ```jl
-optimize(f, g!, [0.0, 0.0], method = SimulatedAnnealing())
+optimize(f, g!, [0.0, 0.0], SimulatedAnnealing())
 ```
 
 In addition to providing exact gradients, you can provide an exact Hessian function `h!` as well. In our current case this is:
@@ -73,12 +73,12 @@ end
 ```
 Now we can use Newton's method for optimization by running:
 ```jl
-optimize(f, g!, h!, [0.0, 0.0], method = Newton())
+optimize(f, g!, h!, [0.0, 0.0], Newton())
 ```
 Like gradients, the Hessian function will be ignored if you use a method that does not require it:
 
 ```jl
-    optimize(f, g!, h!, [0.0, 0.0], method = LBFGS())
+    optimize(f, g!, h!, [0.0, 0.0], LBFGS())
 ```
 
 Note that Optim will not generate approximate Hessians using finite differencing because of the potentially low accuracy of approximations to the Hessians. Other than Newton's method, none of the algorithms provided by the Optim package employ exact Hessians.
@@ -112,7 +112,7 @@ end
 We can then optimize the `sqerror` function just like any other function:
 
 ```jl
-res = optimize(sqerror, [0.0, 0.0], method = LBFGS())
+res = optimize(sqerror, [0.0, 0.0], LBFGS())
 ```
 
 # Configurable Options
@@ -158,7 +158,7 @@ Thus, one might construct a complex call to `optimize` like:
 ```jl
 res = optimize(f, g!,
                [0.0, 0.0],
-               method = GradientDescent(),
+               GradientDescent(),
                OptimizationOptions(grtol = 1e-12,
                                    iterations = 10,
                                    store_trace = true,
@@ -211,8 +211,8 @@ If you do not provide a function like `fg!`, the constructor for `Differentiable
 By defining a `DifferentiableFunction` that estimates function values and gradients simultaneously, you can sometimes achieve noticeable performance gains:
 
 ```jl
-@elapsed optimize(f, g!, [0.0, 0.0], method = BFGS())
-@elapsed optimize(d4, [0.0, 0.0], method = BFGS())
+@elapsed optimize(f, g!, [0.0, 0.0], BFGS())
+@elapsed optimize(d4, [0.0, 0.0], BFGS())
 ```
 
 At the moment, the performance bottleneck for many problems is the simplistic backtracking line search we are using in Optim. As this step becomes more efficient, we expect that the gains from using a function that evaluates the main function and its gradient simultaneously will grow.
@@ -286,8 +286,8 @@ optimize(f_univariate, -2.0, 1.0)
 
 Two methods are available:
 
-* Brent's method, the default (can be explicitly selected with `method = Brent()`).
-* Golden section search, available with `method = GoldenSection()`.
+* Brent's method, the default (can be explicitly selected with `Brent()`).
+* Golden section search, available with `GoldenSection()`.
 
 In addition to the `iterations`, `store_trace`, `show_trace` and
 `extended_trace` options, the following options are also available:
@@ -297,7 +297,7 @@ In addition to the `iterations`, `store_trace`, `show_trace` and
 
 ## State of the Library
 
-The current API calls for the user to use the `optimize` function with the appropriate `method` as shown above. Below is the old (deprecated) syntax.
+The current API calls for the user to use the `optimize` function with the appropriate method as shown above. Below is the old (deprecated) syntax.
 
 ### Existing Functions (deprecated)
 * Gradient Descent: `gradient_descent()`
