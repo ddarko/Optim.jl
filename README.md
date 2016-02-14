@@ -27,13 +27,13 @@ Once we've defined this functions, we can find the minimum of the Rosenbrock fun
 ```jl
 optimize(f, [0.0, 0.0])
 ```
-Optim will default to using the Nelder-Mead method in this case. We can specify the Nelder-Mead method explicitly using the `method` keyword:
+Optim will default to using the Nelder-Mead method in this case. We can specify the Nelder-Mead method explicitly using the following syntax:
 
 ```jl
 optimize(f, [0.0, 0.0], NelderMead())
 ```
 
-The `method` keyword also allows us to specify other methods as well. Below, we use L-BFGS, a quasi-Newton method that requires a gradient. If we pass `f` alone, Optim will construct an approximate gradient for us using central finite differencing:
+Other methods are available besides Nelder Mead. Below, we use L-BFGS, a quasi-Newton method that requires a gradient. If we pass `f` alone, Optim will construct an approximate gradient for us using central finite differencing:
 
 ```jl
 optimize(f, [0.0, 0.0], LBFGS())
@@ -117,7 +117,7 @@ res = optimize(sqerror, [0.0, 0.0], LBFGS())
 
 # Configurable Options
 
-The section above described the basic API for the Optim package, although it is on the roadmap to update this soon. We employed several different optimization algorithms using the `method` keyword, which can take on any of the following values:
+The section above described the basic API for the Optim package, although it is on the roadmap to update this soon. The full list of available methods can be summarized as follows.
 
 Requires only a function handle:
 * `NelderMead()`
@@ -141,7 +141,7 @@ Special methods for univariate optimization:
 * `Brent()`
 * `GoldenSection()`
 
-In addition to the `method` keyword, you can alter the behavior of the Optim package by using the following keywords in a `OptimizationOptions` constructor:
+In addition to the method, you can alter the behavior of the Optim package by using the `OptimizationOptions` constructor with the following keywords:
 
 * `xtol`: What is the threshold for determining convergence? Defaults to `1e-32`.
 * `ftol`: What is the threshold for determining convergence? Defaults to `1e-32`.
