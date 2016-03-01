@@ -55,3 +55,14 @@ for (name, prob) in Optim.UnconstrainedProblems.examples
 		@assert norm(res.minimum - prob.solutions) < 1e-2
 	end
 end
+
+using ForwardDiff
+easom(x) = -cos(x[1])*cos(x[2])*exp(-((x[1]-pi)^2 + (x[2]-pi)^2))
+x, y = 1.2:0.1:4, 1.2:0.1:4
+
+g_easom = ForwardDiff.gradient(easom)
+h_easom = ForwardDiff.hessian(easom)
+
+# start where old Newton's method would fail due to concavity 
+optimize(easom, (x, y) -> copy!(y, g_easom(x)), (x,y)->copy!(y, h_easom(x)), [2., 2.], Newton())
+@test_approx_eq optimize(easom, (x, y) -> copy!(y, g_easom(x)), (x,y)->copy!(y, h_easom(x)), [2., 2.], Newton()).minimum [float(pi);float(pi)]
