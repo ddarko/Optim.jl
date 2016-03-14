@@ -49,3 +49,11 @@ objective.fg!(results.minimum, g)
 for i = 1:N
     @test abs(g[i]) < 3e-3 || (results.minimum[i] < -boxl+1e-3 && g[i] > 0) || (results.minimum[i] > boxl-1e-3 && g[i] < 0)
 end
+
+# tests for #180
+results = Optim.optimize(objective, x0, l, u, Fminbox(); iterations = 2)
+@test results.iterations == 2
+@test results.f_minimum == objective.f(results.minimum)
+
+results = Optim.optimize(objective, x0, l, u, Fminbox(); optimizer_o = OptimizationOptions(iterations = 2))
+@test results.iterations == 470
