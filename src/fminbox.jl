@@ -113,9 +113,9 @@ function optimize{T<:AbstractFloat}(
         l::Array{T},
         u::Array{T},
         ::Fminbox;
-        xtol::T = eps(T),
-        ftol::T = sqrt(eps(T)),
-        grtol::T = sqrt(eps(T)),
+        x_tol::T = eps(T),
+        f_tol::T = sqrt(eps(T)),
+        g_tol::T = sqrt(eps(T)),
         iterations::Integer = 1_000,
         store_trace::Bool = false,
         show_trace::Bool = false,
@@ -206,7 +206,7 @@ function optimize{T<:AbstractFloat}(
             @inbounds g[i] = gfunc[i] + mu*gbarrier[i]
         end
 
-        x_converged, f_converged, gr_converged, converged = assess_convergence(x, xold, results.f_minimum, fval0, g, xtol, ftol, grtol)
+        x_converged, f_converged, gr_converged, converged = assess_convergence(x, xold, results.f_minimum, fval0, g, x_tol, f_tol, g_tol)
 
     end
     results.method = "Fminbox with $(results.method)"

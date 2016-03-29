@@ -148,9 +148,9 @@ function optimize{T}(d::DifferentiableFunction,
                                        f_x,
                                        f_x_previous,
                                        gr,
-                                       o.xtol,
-                                       o.ftol,
-                                       o.grtol)
+                                       o.x_tol,
+                                       o.f_tol,
+                                       o.g_tol)
 
         # Measure the change in the gradient
         @simd for i in 1:n
@@ -184,11 +184,11 @@ function optimize{T}(d::DifferentiableFunction,
                                            iteration,
                                            iteration == o.iterations,
                                            x_converged,
-                                           o.xtol,
+                                           o.x_tol,
                                            f_converged,
-                                           o.ftol,
+                                           o.f_tol,
                                            gr_converged,
-                                           o.grtol,
+                                           o.g_tol,
                                            tr,
                                            f_calls,
                                            g_calls)

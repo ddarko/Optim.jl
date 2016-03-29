@@ -1,9 +1,9 @@
 abstract Optimizer
 
 immutable OptimizationOptions{TCallback <: Union{Void, Function}}
-    xtol::Float64
-    ftol::Float64
-    grtol::Float64
+    x_tol::Float64
+    f_tol::Float64
+    g_tol::Float64
     iterations::Int
     store_trace::Bool
     show_trace::Bool
@@ -14,9 +14,9 @@ immutable OptimizationOptions{TCallback <: Union{Void, Function}}
 end
 
 function OptimizationOptions(;
-        xtol::Real = 1e-32,
-        ftol::Real = 1e-8,
-        grtol::Real = 1e-8,
+        x_tol::Real = 1e-32,
+        f_tol::Real = 1e-8,
+        g_tol::Real = 1e-8,
         iterations::Integer = 1_000,
         store_trace::Bool = false,
         show_trace::Bool = false,
@@ -29,7 +29,7 @@ function OptimizationOptions(;
         show_trace = true
     end
     OptimizationOptions{typeof(callback)}(
-        Float64(xtol), Float64(ftol), Float64(grtol), Int(iterations),
+        Float64(x_tol), Float64(f_tol), Float64(g_tol), Int(iterations),
         store_trace, show_trace, extended_trace, autodiff, Int(show_every),
         callback)
 end

@@ -22,13 +22,30 @@ end
                    initial_x::Vector{T};
                    initial_invH::Matrix = eye(length(initial_x)),
                    linesearch!::Function = hz_linesearch!,
-                   nargs...) optimize(d, initial_x, BFGS(linesearch! = linesearch!), OptimizationOptions(;nargs...), initial_invH = initial_invH)
+                   xtol = 1e-32,
+                   ftol = 1e-8,
+                   grtol = 1e-8,
+                   rest_args...) optimize(d, initial_x, BFGS(linesearch! = linesearch!),
+                                                   OptimizationOptions(;
+                                                       x_tol = xtol,
+                                                       f_tol = ftol,
+                                                       g_tol = grtol,
+                                                       rest_args...),
+                                                    initial_invH = initial_invH)
 
 @deprecate l_bfgs{T}(d::Union{DifferentiableFunction, TwiceDifferentiableFunction},
                    initial_x::Vector{T};
                    m::Integer = 10,
                    linesearch!::Function = hz_linesearch!,
-                   nargs...) optimize(d, initial_x, LBFGS(m = m, linesearch! = linesearch!), OptimizationOptions(;nargs...))
+                   xtol = 1e-32,
+                   ftol = 1e-8,
+                   grtol = 1e-8,
+                   rest_args...) optimize(d, initial_x, LBFGS(m = m, linesearch! = linesearch!),
+                                                   OptimizationOptions(;
+                                                       x_tol = xtol,
+                                                       f_tol = ftol,
+                                                       g_tol = grtol,
+                                                       rest_args...))
 
 @deprecate cg{T}(df::Union{DifferentiableFunction, TwiceDifferentiableFunction},
                 initial_x::Array{T};
@@ -36,30 +53,70 @@ end
                 eta::Real = convert(T,0.4),
                 P::Any = nothing,
                 precondprep::Function = (P, x) -> nothing,
-                nargs...) optimize(df, initial_x, ConjugateGradient(eta = eta, precondprep = precondprep, P = P, linesearch! = linesearch!), OptimizationOptions(;nargs...))
+                xtol = 1e-32,
+                ftol = 1e-8,
+                grtol = 1e-8,
+                rest_args...) optimize(df, initial_x, ConjugateGradient(eta = eta, precondprep = precondprep, P = P, linesearch! = linesearch!),
+                                                OptimizationOptions(;
+                                                    x_tol = xtol,
+                                                    f_tol = ftol,
+                                                    g_tol = grtol,
+                                                    rest_args...))
 
 @deprecate gradient_descent{T}(df::Union{DifferentiableFunction, TwiceDifferentiableFunction},
                 initial_x::Array{T};
                 linesearch!::Function = hz_linesearch!,
-                nargs...) optimize(df, initial_x, GradientDescent(linesearch! = linesearch!), OptimizationOptions(;nargs...))
+                xtol = 1e-32,
+                ftol = 1e-8,
+                grtol = 1e-8,
+                rest_args...) optimize(df, initial_x, GradientDescent(linesearch! = linesearch!),
+                                                OptimizationOptions(;
+                                                    x_tol = xtol,
+                                                    f_tol = ftol,
+                                                    g_tol = grtol,
+                                                    rest_args...))
 
 @deprecate momentum_gradient_descent{T}(df::Union{DifferentiableFunction,
                                                   TwiceDifferentiableFunction},
                 initial_x::Array{T};
                 linesearch!::Function = hz_linesearch!,
                 mu::Real = 0.01,
-                nargs...) optimize(df, initial_x, MomentumGradientDescent(mu = mu, linesearch! = linesearch!), OptimizationOptions(;nargs...))
+                xtol = 1e-32,
+                ftol = 1e-8,
+                grtol = 1e-8,
+                rest_args...) optimize(df, initial_x, MomentumGradientDescent(mu = mu, linesearch! = linesearch!),
+                                                OptimizationOptions(;
+                                                    x_tol = xtol,
+                                                    f_tol = ftol,
+                                                    g_tol = grtol,
+                                                    rest_args...))
 
 @deprecate accelerated_gradient_descent{T}(df::Union{DifferentiableFunction,
                                                      TwiceDifferentiableFunction},
                 initial_x::Array{T};
                 linesearch!::Function = hz_linesearch!,
-                nargs...) optimize(df, initial_x, AcceleratedGradientDescent(linesearch! = linesearch!), OptimizationOptions(;nargs...))
+                xtol = 1e-32,
+                ftol = 1e-8,
+                grtol = 1e-8,
+                rest_args...) optimize(df, initial_x, AcceleratedGradientDescent(linesearch! = linesearch!),
+                                                OptimizationOptions(;
+                                                    x_tol = xtol,
+                                                    f_tol = ftol,
+                                                    g_tol = grtol,
+                                                    rest_args...))
 
 @deprecate newton{T}(df::TwiceDifferentiableFunction,
                 initial_x::Array{T};
                 linesearch!::Function = hz_linesearch!,
-                nargs...) optimize(df, initial_x, Newton(linesearch! = linesearch!), OptimizationOptions(;nargs...))
+                xtol = 1e-32,
+                ftol = 1e-8,
+                grtol = 1e-8,
+                rest_args...) optimize(df, initial_x, Newton(linesearch! = linesearch!),
+                                                OptimizationOptions(;
+                                                    x_tol = xtol,
+                                                    f_tol = ftol,
+                                                    g_tol = grtol,
+                                                    rest_args...))
 
 @deprecate brent{T <: AbstractFloat}(f::Function, x_lower::T, x_upper::T;
                 nargs...) optimize(f, x_lower, x_upper, Brent(); nargs...)
@@ -77,11 +134,22 @@ end
                         g::Real = 2.0,
                         b::Real = 0.5,
                         initial_step::Vector{T} = ones(T,length(initial_x)),
-                        nargs...) optimize(f, initial_x, NelderMead(a=a, b=b, g=g), OptimizationOptions(nargs...), initial_step = initial_step)
+                        ftol = 1e-8,
+                        rest_args...) optimize(f, initial_x, NelderMead(a=a, b=b, g=g),
+                                                OptimizationOptions(f_tol = ftol,
+                                                                    rest_args...),
+                                                initial_step = initial_step)
 
 @deprecate golden_section{T <: AbstractFloat}(f::Function, x_lower::T, x_upper::T;
                         nargs...) optimize(f, x_lower, x_upper, GoldenSection(); nargs...)
 
 @deprecate fminbox{T<:AbstractFloat}(df::DifferentiableFunction,
                     initial_x::Array{T}, l::Array{T}, u::Array{T};
-                    optimizer = cg, nargs...) optimize(df, initial_x, l, u, Fminbox(); optimizer = get_optimizer(symbol(optimizer)), nargs...)
+                    optimizer = cg,
+                    xtol =  eps(T),
+                    ftol = sqrt(eps(T)),
+                    grtol = sqrt(eps(T)),
+                    rest_args...) optimize(df, initial_x, l, u, Fminbox(); optimizer = get_optimizer(symbol(optimizer)), x_tol = xtol,
+                                                                                                                         f_tol = ftol,
+                                                                                                                         g_tol = gtol,
+                                                                                                                         rest_args...)

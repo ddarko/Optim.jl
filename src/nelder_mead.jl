@@ -184,7 +184,7 @@ function optimize{T}(f::Function,
 
         @nmtrace
 
-        if f_x <= o.ftol
+        if f_x <= o.f_tol
             f_converged = true
         end
     end
@@ -200,7 +200,7 @@ function optimize{T}(f::Function,
                                            false,
                                            NaN,
                                            f_converged,
-                                           o.ftol,
+                                           o.f_tol,
                                            false,
                                            NaN,
                                            tr,

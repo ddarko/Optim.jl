@@ -3,23 +3,23 @@ function assess_convergence(x::Array,
                             f_x::Real,
                             f_x_previous::Real,
                             gr::Array,
-                            xtol::Real,
-                            ftol::Real,
-                            grtol::Real)
+                            x_tol::Real,
+                            f_tol::Real,
+                            g_tol::Real)
     x_converged, f_converged, gr_converged = false, false, false
 
-    if maxdiff(x, x_previous) < xtol
+    if maxdiff(x, x_previous) < x_tol
         x_converged = true
     end
 
     # Absolute Tolerance
-    # if abs(f_x - f_x_previous) < ftol
+    # if abs(f_x - f_x_previous) < f_tol
     # Relative Tolerance
-    if abs(f_x - f_x_previous) / (abs(f_x) + ftol) < ftol || nextfloat(f_x) >= f_x_previous
+    if abs(f_x - f_x_previous) / (abs(f_x) + f_tol) < f_tol || nextfloat(f_x) >= f_x_previous
         f_converged = true
     end
 
-    if norm(vec(gr), Inf) < grtol
+    if norm(vec(gr), Inf) < g_tol
         gr_converged = true
     end
 
