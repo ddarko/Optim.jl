@@ -3,6 +3,8 @@
 Optim.jl
 ========
 
+[![Join the chat at https://gitter.im/JuliaOpt/Optim.jl](https://badges.gitter.im/JuliaOpt/Optim.jl.svg)](https://gitter.im/JuliaOpt/Optim.jl?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Optim](http://pkg.julialang.org/badges/Optim_0.3.svg)](http://pkg.julialang.org/?pkg=Optim&ver=0.3)
 [![Optim](http://pkg.julialang.org/badges/Optim_0.4.svg)](http://pkg.julialang.org/?pkg=Optim&ver=0.4)
 
@@ -364,11 +366,42 @@ In addition to the `iterations`, `store_trace`, `show_trace` and
 * `rel_tol`: The relative tolerance used for determining convergence. Defaults to `sqrt(eps(T))`.
 * `abs_tol`: The absolute tolerance used for determining convergence. Defaults to `eps(T)`.
 
-## State of the Library
+## Preconditioning
+
+The `GradientDescent`, `ConjugateGradient` and `LBFGS` methods support preconditioning. A preconditioner
+can be thought of as a change of coordinates under which the Hessian is better conditioned. With a
+"good" preconditioner substantially improved convergence is possible.
+
+An example of this is shown below (`Optimizer` ∈ {`GradientDescent`, `ConjugateGradient`, `LBFGS`}).
+```jl
+using ForwardDiff
+plap(U; n=length(U)) = (n-1) * sum( (0.1 + diff(U).^2).^2 ) - sum(U) / (n-1)
+plap1 = ForwardDiff.gradient(plap)
+precond(n) = spdiagm( ( -ones(n-1), 2*ones(n), -ones(n-1) ), (-1,0,1), n, n) * (n+1)
+df = DifferentiableFunction( X->plap([0;X;0]),
+                             (X, G)->copy!(G, (plap1([0;X;0]))[2:end-1]) )
+result = Optim.optimize(df, zeros(100), method=ConjugateGradient(P = nothing) )
+result = Optim.optimize(df, zeros(100), method=ConjugateGradient(P = precond(100)) )
+```
+Benchmarking shows that using preconditioning provides an approximate speedup factor of 15 in this case.
+
+The optimizers then use `precondprep!` to update the preconditioner after each update of the
+state `x`. Further, to apply the preconditioner, they employ the the following three methods:
+* `pprecondfwd!(out, P, A)` : apply `P` to a vector `A` and store in `out`
+* `precondfwddot(A, P, B)` : take the inner product between `B` and `pprecondfwd!(out, P, A)`
+* `precondinvdot(A, P, B)` : the dual inner product
+
+Precisely what these operations mean, depends on how `P` is stored. Commonly, we store a matrix `P` which
+approximates the Hessian in some vague sense. In this case,
+* `pprecondfwd!(out, P, A) = copy!(out, P \ A)`
+* `precondfwddot(A, P, B) = dot(A, P \ B)`
+* `precondinvdot(A, P, B) = dot(A, P * B)`
+
+# State of the Library
 
 The current API calls for the user to use the `optimize` function with the appropriate `method` as shown above. Below is the old (deprecated) syntax.
 
-### Existing Functions (deprecated)
+## Existing Functions (deprecated)
 * Gradient Descent: `gradient_descent()`
 * Newton's Method: `newton()`
 * BFGS: `bfgs()`
@@ -383,11 +416,11 @@ The current API calls for the user to use the `optimize` function with the appro
 * Brent's method: `brent()`
 * Golden Section search: `golden_section()`
 
-### Planned Functions
+## Planned Functions
 * Linear conjugate gradients
 * L-BFGS-B (note that this functionality is already available in fminbox)
 
-### Citations
+# Citations
 
 W. W. Hager and H. Zhang (2006) Algorithm 851: CG_DESCENT, a conjugate gradient method with guaranteed descent. ACM Transactions on Mathematical Software 32: 113-137.
 
